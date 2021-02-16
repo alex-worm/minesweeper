@@ -2,41 +2,12 @@ import React from "react";
 import Cell from "./Cell";
 
 export default class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      field: props.field,
-    };
-  }
-
-  handleClick(x, y) {
-    if (this.state.field[x][y].isRevealed || this.state.field[x][y].isFlagged) {
-      return null;
-    }
-
-    const newField = this.state.field;
-    newField[x][y].isRevealed = true;
-    this.setState({ field: newField });
-  }
-
-  handleContextMenu(e, x, y) {
-    e.preventDefault();
-
-    if (this.state.field[x][y].isRevealed) {
-      return null;
-    }
-
-    const newField = this.state.field;
-    newField[x][y].isFlagged = !newField[x][y].isFlagged;
-    this.setState({ field: newField });
-  }
-
   renderRow(row) {
     return row.map((cell) => {
       return (
         <Cell
-          onClick={() => this.handleClick(cell.x, cell.y)}
-          cMenu={(e) => this.handleContextMenu(e, cell.x, cell.y)}
+          onClick={() => this.props.onClick(cell.x, cell.y)}
+          cMenu={(e) => this.props.cMenu(e, cell.x, cell.y)}
           value={cell}
         />
       );
@@ -44,7 +15,7 @@ export default class Board extends React.Component {
   }
 
   render() {
-    return this.state.field.map((row) => {
+    return this.props.field.map((row) => {
       return <div className="row">{this.renderRow(row)}</div>;
     });
   }

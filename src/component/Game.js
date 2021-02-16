@@ -1,5 +1,6 @@
 import React from "react";
 import Board from "./Board";
+import GameStatus from "./GameStatus";
 
 function GetRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -8,8 +9,9 @@ function GetRandomInt(min, max) {
 export default class Game extends React.Component {
   state = {
     field: this.createField(8, 8),
+    minesLeft: null,
+    time: 0,
     gameStatus: "😀",
-    minesLeft: 8,
   };
 
   createField(length, minesCount) {
@@ -42,56 +44,22 @@ export default class Game extends React.Component {
     return field;
   }
 
-  destroy() {
+  endGame(isWon) {
     this.setState({ gameStatus: "🤕💣" });
     alert("bombed");
   }
 
-  handleClick(x, y) {
-    if (
-      this.state.gameStatus !== "😀" ||
-      this.state.field[x][y].isRevealed ||
-      this.state.field[x][y].isFlagged
-    ) {
-      return null;
-    }
-
-    if (this.state.field[x][y].isMine) {
-      this.destroy();
-      return;
-    }
-
-    const newField = this.state.field;
-    newField[x][y].isRevealed = true;
-    this.setState({ field: newField });
-  }
-
-  handleContextMenu(e, x, y) {
-    e.preventDefault();
-
-    if (this.state.gameStatus !== "😀" || this.state.field[x][y].isRevealed) {
-      return null;
-    }
-
-    const newField = this.state.field;
-    newField[x][y].isFlagged = !newField[x][y].isFlagged;
-    this.setState({ field: newField });
-  }
-
   render() {
+    const info = this.state;
     return (
       <div className="game">
-        <button
-          onClick={() => this.setState({ minesLeft: this.state.minesLeft })}
-        >
-          {this.state.gameStatus}
-        </button>
-        <div>Mines left: {this.state.minesLeft}</div>
-        <Board
-          field={this.state.field}
-          onClick={this.handleClick}
-          cMenu={this.handleContextMenu}
+        <GameStatus
+          gameStatus={info.gameStatus}
+          minesLeft={info.minesLeft}
+          time={info.time}
+          onCLick={() => this.endGame()}
         />
+        <Board field={info.field} gameStatus={info.gameStatus} />
       </div>
     );
   }

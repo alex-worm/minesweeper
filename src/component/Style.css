@@ -16,9 +16,15 @@ body {
 }
 
 .game {
-  max-width: 400px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 20px;
+}
+
+.smiley {
+  height: 45px;
+  text-align: center;
+  width: 45px;
 }
 
 .game-info {

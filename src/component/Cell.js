@@ -13,7 +13,7 @@ export default class Cell extends React.Component {
     if (value.neighbors === 0) {
       return null;
     }
-    return value.neighbor;
+    return value.neighbors;
   }
 
   render() {

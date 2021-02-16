@@ -11,7 +11,7 @@ export default class Board extends React.Component {
       return null;
     }
 
-    if (this.state.field[x][y].isMine) {
+    if (this.props.field[x][y].isMine) {
       this.destroy();
       return;
     }
@@ -37,12 +37,10 @@ export default class Board extends React.Component {
     return row.map((cell) => {
       return (
         <Cell
-          onClick={() => {
-            this.props.onClick(cell.x, cell.y);
-            alert("fgsd");
-          }}
-          cMenu={(e) => this.props.cMenu(e, cell.x, cell.y)}
+          key={cell.x * row.length + cell.y}
           value={cell}
+          onClick={() => this.handleClick(cell.x, cell.y)}
+          cMenu={(e) => this.handleContextMenu(e, cell.x, cell.y)}
         />
       );
     });

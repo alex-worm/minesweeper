@@ -1,18 +1,81 @@
 import React from "react";
-import Board from "./Board";
-import GameStatus from "./GameStatus";
+import Cell from "./Cell";
+import Smiley from "./Smiley";
 
 function GetRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
 export default class Game extends React.Component {
-  state = {
-    field: this.createField(8, 8),
-    minesLeft: null,
-    time: 0,
-    gameStatus: "😀",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      length: 10,
+      mines: 10,
+      field: [],
+      minesLeft: null,
+      time: 0,
+      gameStatus: "😀",
+    };
+    this.state.field = this.createField(this.state.length, this.state.mines);
+    this.state.minesLeft = this.state.mines;
+  }
+
+  setNeighbors(field) {
+    for (let i = 0; i < this.state.length; i++) {
+      for (let j = 0; j < this.state.length; j++) {
+        let mine = 0;
+        const area = this.getNeighbors(field, field[i][j].x, field[i][j].y);
+        area.map((cell) => {
+          if (cell.isMine) {
+            mine++;
+          }
+        });
+        field[i][j].neighbors = mine;
+      }
+    }
+
+    return field;
+  }
+
+  getNeighbors(field, x, y) {
+    const el = [];
+
+    //up
+    if (x > 0) {
+      el.push(field[x - 1][y]);
+    }
+    //down
+    if (x < this.state.length - 1) {
+      el.push(field[x + 1][y]);
+    }
+    //left
+    if (y > 0) {
+      el.push(field[x][y - 1]);
+    }
+    //right
+    if (y < this.state.length - 1) {
+      el.push(field[x][y + 1]);
+    }
+    // top left
+    if (x > 0 && y > 0) {
+      el.push(field[x - 1][y - 1]);
+    }
+    // top right
+    if (x > 0 && y < this.state.length - 1) {
+      el.push(field[x - 1][y + 1]);
+    }
+    // bottom right
+    if (x < this.state.length - 1 && y < this.state.length - 1) {
+      el.push(field[x + 1][y + 1]);
+    }
+    // bottom left
+    if (x < this.state.length - 1 && y > 0) {
+      el.push(field[x + 1][y - 1]);
+    }
+
+    return el;
+  }
 
   createField(length, minesCount) {
     let field = [];
@@ -24,9 +87,8 @@ export default class Game extends React.Component {
           x: i,
           y: j,
           isMine: false,
-          neighbors: 0,
+          neighbors: null,
           isRevealed: false,
-          isEmpty: false,
           isFlagged: false,
         };
       }
@@ -41,25 +103,158 @@ export default class Game extends React.Component {
       }
     }
 
+    this.setNeighbors(field);
+
     return field;
   }
 
   endGame(isWon) {
-    this.setState({ gameStatus: "🤕💣" });
-    alert("bombed");
+    if (!isWon) {
+      let blownField = this.state.field;
+
+      blownField = blownField.map((row) => {
+        return row.map((cell) => {
+          if (cell.isMine) {
+            cell.isRevealed = true;
+          }
+          return cell;
+        });
+      });
+
+      this.setState({ field: blownField, gameStatus: "🤕" });
+      return;
+    }
+
+    this.setState({ gameStatus: "😎" });
+  }
+
+  revealEmpty(field, x, y) {
+    let area = this.getNeighbors(field, x, y);
+
+    area.map((cell) => {
+      if (
+        !cell.isFlagged &&
+        !cell.isRevealed &&
+        (cell.neighbors === 0 || !cell.isMine)
+      ) {
+        field[cell.x][cell.y].isRevealed = true;
+        if (cell.neighbors === 0) {
+          this.revealEmpty(field, cell.x, cell.y);
+        }
+      }
+    });
+
+    return field;
+  }
+
+  handleClick(x, y) {
+    if (
+      this.state.gameStatus !== "😀" ||
+      this.state.field[x][y].isRevealed ||
+      this.state.field[x][y].isFlagged
+    ) {
+      return null;
+    }
+
+    if (this.state.field[x][y].isMine) {
+      this.endGame(false);
+      return;
+    }
+
+    let newField = this.state.field;
+
+    if (newField[x][y].neighbors === 0) {
+      newField = this.revealEmpty(newField, x, y);
+    }
+
+    newField[x][y].isRevealed = true;
+    this.setState({ field: newField });
+    if (this.state.minesLeft === 0) {
+      this.checkForWin();
+    }
+  }
+
+  checkForWin() {
+    for (let i = 0; i < this.state.length; i++) {
+      for (let j = 0; j < this.state.length; j++) {
+        if (
+          (this.state.field[i][j].isFlagged &&
+            !this.state.field[i][j].isMine) ||
+          (!this.state.field[i][j].isRevealed &&
+            !this.state.field[i][j].isFlagged)
+        ) {
+          console.log("no win" + this.state.field[i][j]);
+          return null;
+        }
+      }
+    }
+
+    this.endGame(true);
+  }
+
+  handleContextMenu(e, x, y) {
+    e.preventDefault();
+
+    if (
+      this.state.gameStatus !== "😀" ||
+      (this.state.minesLeft === 0 && !this.state.field[x][y].isFlagged) ||
+      this.state.field[x][y].isRevealed
+    ) {
+      return null;
+    }
+
+    const newField = this.state.field;
+    let minesLeft = this.state.minesLeft;
+
+    newField[x][y].isFlagged = !newField[x][y].isFlagged;
+    newField[x][y].isFlagged ? minesLeft-- : minesLeft++;
+
+    this.setState({ field: newField, minesLeft: minesLeft });
+    if (minesLeft === 0) {
+      this.checkForWin();
+    }
+  }
+
+  renderRow(row) {
+    return row.map((cell) => {
+      return (
+        <Cell
+          key={cell.x * row.length + cell.y}
+          value={cell}
+          onClick={() => this.handleClick(cell.x, cell.y)}
+          cMenu={(e) => this.handleContextMenu(e, cell.x, cell.y)}
+        />
+      );
+    });
+  }
+
+  discharge() {
+    let newField = this.createField(this.state.length, this.state.mines);
+    this.setState({
+      field: newField,
+      minesLeft: this.state.mines,
+      time: 0,
+      gameStatus: "😀",
+    });
   }
 
   render() {
     const info = this.state;
     return (
       <div className="game">
-        <GameStatus
-          gameStatus={info.gameStatus}
-          minesLeft={info.minesLeft}
-          time={info.time}
-          onCLick={() => this.endGame()}
-        />
-        <Board field={info.field} gameStatus={info.gameStatus} />
+        <div className="gameStatus">
+          <div className="minesLeft">{info.minesLeft}</div>
+          <Smiley
+            value={this.state.gameStatus}
+            onClick={() => this.discharge()}
+          />
+          <div className="time">{info.time}</div>
+        </div>
+        <div className="board">
+          {info.field.map((row) => {
+            return <div className="row">{this.renderRow(row)}</div>;
+          })}
+        </div>
       </div>
     );
   }

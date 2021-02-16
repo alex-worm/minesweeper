@@ -1,50 +1,39 @@
 import React from "react";
-
-function Square(props) {
-  return (
-    <div
-      className="square"
-      onClick={props.onClick}
-      onContextMenu={props.onCMenu}
-    >
-      {props.value}
-    </div>
-  );
-}
-
-function Row(props) {
-  let row = [];
-
-  for (let j = 0; j < props.length; j++) {
-    row.push([
-      <Square
-        key={props.i * props.length + j}
-        value={props.i * props.length + j}
-        onClick={() => props.onClick(props.i * props.length + j)}
-        onCMenu={() => props.onCMenu(props.i * props.length + j)}
-      />,
-    ]);
-  }
-
-  return <div className="row">{row}</div>;
-}
+import Cell from "./Cell";
 
 export default class Board extends React.Component {
-  render() {
-    let rows = [];
+  constructor(props) {
+    super(props);
+    this.state = {
+      field: props.field,
+    };
+  }
 
-    for (let i = 0; i < this.props.count; i++) {
-      rows.push([
-        <Row
-          key={i}
-          i={i}
-          length={this.props.count}
-          onClick={() => this.props.onClick(i)}
-          onCMenu={() => this.props.onCMenu(i)}
-        />,
-      ]);
+  handleClick(x, y) {
+    if (this.state.field[x][y].isRevealed) {
+      return null;
     }
 
-    return <div className="board">{rows}</div>;
+    const newField = this.state.field;
+    newField[x][y].isRevealed = true;
+    this.setState({ field: newField });
+  }
+
+  renderRow(row) {
+    return row.map((cell) => {
+      return (
+        <Cell
+          onClick={() => this.handleClick(cell.x, cell.y)}
+          cMenu={(e) => this.handleContextMenu(e, cell.x, cell.y)}
+          value={cell}
+        />
+      );
+    });
+  }
+
+  render() {
+    return this.state.field.map((row) => {
+      return <div className="row">{this.renderRow(row)}</div>;
+    });
   }
 }

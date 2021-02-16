@@ -2,9 +2,9 @@ import React from "react";
 
 export default class Cell extends React.Component {
   render() {
-    const className = this.props.value.isRevealed
-      ? "revealed-cell"
-      : "common-cell";
+    const className =
+      (this.props.value.isRevealed ? "revealed-cell " : "common-cell ") +
+      (this.props.value.isFlagged ? "flagged" : "");
     return (
       <div
         onClick={this.props.onClick}

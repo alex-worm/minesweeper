@@ -10,12 +10,24 @@ export default class Board extends React.Component {
   }
 
   handleClick(x, y) {
-    if (this.state.field[x][y].isRevealed) {
+    if (this.state.field[x][y].isRevealed || this.state.field[x][y].isFlagged) {
       return null;
     }
 
     const newField = this.state.field;
     newField[x][y].isRevealed = true;
+    this.setState({ field: newField });
+  }
+
+  handleContextMenu(e, x, y) {
+    e.preventDefault();
+
+    if (this.state.field[x][y].isRevealed) {
+      return null;
+    }
+
+    const newField = this.state.field;
+    newField[x][y].isFlagged = !newField[x][y].isFlagged;
     this.setState({ field: newField });
   }
 

@@ -67,7 +67,7 @@ body {
   background: #2e2829;
 }
 
-.is-flag,
+.flagged,
 .is-mine {
   color: #fc543c;
 }

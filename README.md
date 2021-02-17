@@ -1,4 +1,4 @@
-!preview(https://github.com/alex-worm/minesweeper-react/blob/master/screenshot.png?raw=true)
+!preview(https://github.com/alex-worm/minesweeper-react/blob/master/public/screenshot.png?raw=true)
 
 # Getting Started with Create React App
 

@@ -1,65 +1,134 @@
+@font-face {
+  font-family: "W95";
+  src: url("W95FA.otf");
+}
+
 * {
   user-select: none;
+  font-family: "W95";
+}
+
+.closeBut:active,
+.smiley:active,
+.common-cell:active {
+  border-color: darkgray snow snow darkgray;
 }
 
 body {
   margin: 20px;
   padding: 0;
-  font-family: sans-serif;
-  background: silver;
+  background-color: #008080;
+}
+
+.windowTop {
+  text-align: center;
+  line-height: 30px;
+  font-size: 20px;
+  display: flex;
+  padding: 5px 10px 5px 10px;
+  font-weight: 400;
+  justify-content: space-between;
+  background-color: darkblue;
+  color: white;
+}
+
+.closeBut {
+  box-sizing: border-box;
+  line-height: 22px;
+  height: 30px;
+  width: 30px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: snow darkgray darkgray snow;
+  font-weight: bold;
+  color: black;
+  background-color: lightgray;
+}
+
+.game {
+  margin: auto;
+  width: fit-content;
+  border-width: 5px;
+  border-style: solid;
+  border-color: snow darkgray darkgray snow;
 }
 
 .gameStatus {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  color: firebrick;
+  border: 10px solid lightgray;
 }
 
 .minesCounter,
 .smiley,
 .timer {
-  flex-grow: 1;
+  box-sizing: border-box;
+  border-width: 5px;
+  border-style: solid;
   font-size: 80px;
-  line-height: 100px;
-  height: 100px;
+  line-height: 80px;
   text-align: center;
   width: 100px;
+  background-color: lightgray;
+}
+
+.minesCounter,
+.timer {
+  flex-grow: 1;
+  text-align: right;
+}
+
+.minesCounter {
+  border-color: darkgray lightgray snow darkgray;
+  border-right: 0px;
+}
+
+.timer {
+  border-color: darkgray snow snow lightgray;
+  border-left: 0px;
 }
 
 .smiley {
+  font-size: 60px;
   cursor: pointer;
+  border-color: snow darkgray darkgray snow;
 }
 
 .board {
   margin: auto;
+  width: fit-content;
+  border: 10px solid lightgray;
 }
 
 .row {
-  width: fit-content;
-  margin: auto;
-  justify-content: center;
   display: flex;
 }
 
-.common-cell {
-  background: black;
-  border: 1px solid gray;
+.common-cell,
+.revealed-cell {
+  box-sizing: border-box;
   line-height: 45px;
+  font-size: 25px;
   height: 45px;
   text-align: center;
   width: 45px;
+}
+
+.common-cell {
+  line-height: 35px;
+  background: lightgray;
+  border-width: 5px;
+  border-style: solid;
+  border-color: snow darkgray darkgray snow;
   cursor: pointer;
-  font-weight: 600;
 }
 
 .revealed-cell {
   background: gray;
-  border: 1px solid snow;
-  float: left;
-  line-height: 45px;
-  height: 45px;
-  text-align: center;
-  width: 45px;
+  border: 2px solid lightgray;
+  font-size: 25px;
+  font-weight: bolder;
   color: snow;
-  font-weight: 600;
 }

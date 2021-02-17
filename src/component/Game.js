@@ -261,7 +261,7 @@ export default class Game extends React.Component {
           <div
             className="closeBut"
             onClick={() => {
-              alert(";(");
+              document.body.style.backgroundImage = "url('blueScreen.png')";
             }}
           >
             X

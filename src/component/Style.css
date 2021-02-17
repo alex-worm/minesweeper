@@ -8,16 +8,17 @@
   font-family: "W95";
 }
 
-.closeBut:active,
-.smiley:active,
-.common-cell:active {
-  border-color: darkgray snow snow darkgray;
-}
-
 body {
   margin: 20px;
   padding: 0;
   background-color: #008080;
+  background-size: cover;
+}
+
+.closeBut:active,
+.smiley:active,
+.common-cell:active {
+  border-color: darkgray snow snow darkgray;
 }
 
 .windowTop {
@@ -109,7 +110,6 @@ body {
 .common-cell,
 .revealed-cell {
   box-sizing: border-box;
-  line-height: 45px;
   font-size: 25px;
   height: 45px;
   text-align: center;
@@ -127,6 +127,7 @@ body {
 
 .revealed-cell {
   background: gray;
+  line-height: 45px;
   border: 2px solid lightgray;
   font-size: 25px;
   font-weight: bolder;

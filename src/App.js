@@ -1,4 +1,3 @@
-import Board from "./component/Board";
 import logo from "./logo.svg";
 import "./App.css";
 import Game from "./component/Game";

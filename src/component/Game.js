@@ -1,6 +1,8 @@
 import React from "react";
 import Cell from "./Cell";
 import Smiley from "./Smiley";
+import Timer from "./Timer";
+import MinesCounter from "./MinesCounter";
 
 function GetRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -13,12 +15,19 @@ export default class Game extends React.Component {
       length: 10,
       mines: 10,
       field: [],
-      minesLeft: null,
+      minesCount: null,
       time: 0,
       gameStatus: "😀",
     };
     this.state.field = this.createField(this.state.length, this.state.mines);
-    this.state.minesLeft = this.state.mines;
+    this.state.minesCount = this.state.mines;
+    this.startTimer();
+  }
+
+  startTimer() {
+    this.timer = setInterval(() => {
+      this.setState({ time: this.state.time + 1 });
+    }, 1000);
   }
 
   setNeighbors(field) {
@@ -109,6 +118,8 @@ export default class Game extends React.Component {
   }
 
   endGame(isWon) {
+    clearInterval(this.timer);
+
     if (!isWon) {
       let blownField = this.state.field;
 
@@ -169,7 +180,7 @@ export default class Game extends React.Component {
 
     newField[x][y].isRevealed = true;
     this.setState({ field: newField });
-    if (this.state.minesLeft === 0) {
+    if (this.state.minesCount === 0) {
       this.checkForWin();
     }
   }
@@ -197,19 +208,19 @@ export default class Game extends React.Component {
 
     if (
       this.state.gameStatus !== "😀" ||
-      (this.state.minesLeft === 0 && !this.state.field[x][y].isFlagged) ||
+      (this.state.minesCount === 0 && !this.state.field[x][y].isFlagged) ||
       this.state.field[x][y].isRevealed
     ) {
       return null;
     }
 
     const newField = this.state.field;
-    let minesLeft = this.state.minesLeft;
+    let minesLeft = this.state.minesCount;
 
     newField[x][y].isFlagged = !newField[x][y].isFlagged;
     newField[x][y].isFlagged ? minesLeft-- : minesLeft++;
 
-    this.setState({ field: newField, minesLeft: minesLeft });
+    this.setState({ field: newField, minesCount: minesLeft });
     if (minesLeft === 0) {
       this.checkForWin();
     }
@@ -228,14 +239,28 @@ export default class Game extends React.Component {
     });
   }
 
+  componentDidMount() {
+    this.interval = setInterval(
+      () => this.setState({ time: this.state.time++ }),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   discharge() {
     let newField = this.createField(this.state.length, this.state.mines);
     this.setState({
       field: newField,
-      minesLeft: this.state.mines,
+      minesCount: this.state.mines,
       time: 0,
       gameStatus: "😀",
     });
+
+    clearInterval(this.timer);
+    this.startTimer();
   }
 
   render() {
@@ -243,12 +268,12 @@ export default class Game extends React.Component {
     return (
       <div className="game">
         <div className="gameStatus">
-          <div className="minesLeft">{info.minesLeft}</div>
+          <MinesCounter value={this.state.minesCount} />
           <Smiley
             value={this.state.gameStatus}
             onClick={() => this.discharge()}
           />
-          <div className="time">{info.time}</div>
+          <Timer value={info.time} />
         </div>
         <div className="board">
           {info.field.map((row) => {

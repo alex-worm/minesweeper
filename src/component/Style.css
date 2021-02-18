@@ -15,9 +15,7 @@ body {
   background-size: cover;
 }
 
-.closeBut:active,
-.smiley:active,
-.common-cell:active {
+.clickable:active {
   border-color: darkgray snow snow darkgray;
 }
 
@@ -47,7 +45,6 @@ body {
 }
 
 .game {
-  margin: auto;
   width: fit-content;
   border-width: 5px;
   border-style: solid;
@@ -79,6 +76,7 @@ body {
 .timer {
   flex-grow: 1;
   text-align: right;
+  min-width: 125px;
 }
 
 .minesCounter {

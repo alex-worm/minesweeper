@@ -4,7 +4,7 @@ export default class CloseButton extends React.Component {
   render() {
     return (
       <div
-        className="closeBut"
+        className="closeBut clickable"
         onClick={() => {
           document.body.style.backgroundImage = "url('blueScreen.png')";
         }}

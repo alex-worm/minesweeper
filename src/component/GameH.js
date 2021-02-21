@@ -10,7 +10,7 @@ import MinesCounter from "./MinesCounter";
 const Game = () => {
   const length = 8;
   const mines = 10;
-  const [field, setField] = useState([]);
+
   const [time, setTime] = useState(0);
   const [status, setStatus] = useState("😀");
   const [minesCount, setMinesCount] = useState(mines);
@@ -29,6 +29,7 @@ const Game = () => {
 
   const createField = () => {
     let field = [];
+    let minesLeft = mines;
 
     for (let i = 0; i < length; i++) {
       field.push([]);
@@ -44,11 +45,12 @@ const Game = () => {
       }
     }
 
-    for (let i = 0; i < minesCount; i++) {
+    while (minesLeft > 0) {
       let rndX = GetRandomInt(0, length);
       let rndY = GetRandomInt(0, length);
       if (!field[rndX][rndY].isMine) {
         field[rndX][rndY].isMine = true;
+        minesLeft--;
       }
     }
 
@@ -90,7 +92,7 @@ const Game = () => {
       newField = revealEmpty(newField, x, y);
     }
 
-    newField[x][y].isRevealed = true;
+    newField[x][y].isRevealed = true; ////////////////////////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     setField(newField);
 
     if (minesCount === 0) {
@@ -109,7 +111,7 @@ const Game = () => {
       return null;
     }
 
-    const newField = field;
+    let newField = field;
     let minesLeft = minesCount;
 
     newField[x][y].isFlagged = !newField[x][y].isFlagged;
@@ -179,13 +181,13 @@ const Game = () => {
   };
 
   const discharge = () => {
-    setField(createField);
+    setMinesCount(mines);
+    setField(createField());
     setTime(0);
     setStatus("😀");
-    setMinesCount(mines);
   };
 
-  setField(createField());
+  const [field, setField] = useState(createField());
 
   return (
     <div className="game">

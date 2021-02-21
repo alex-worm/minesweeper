@@ -1,10 +1,10 @@
-import Cell from "./Cell";
+import CellH from "./CellH";
 
 const Board = (props) => {
   const renderRow = (row) => {
     return row.map((cell) => {
       return (
-        <Cell
+        <CellH
           key={cell.x.toString() + cell.y.toString()}
           value={cell}
           onClick={() => props.handleClick(cell.x, cell.y)}

@@ -5,10 +5,7 @@ import MinesCounter from "./MinesCounter";
 import Board from "./Board";
 import CloseButton from "./CloseButton";
 import GetNeighbors from "./GetNeighbors";
-
-function GetRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
-}
+import GetRandomInt from "./GetRandomInt";
 
 export default class Game extends React.Component {
   constructor(props) {

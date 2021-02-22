@@ -1,35 +1,30 @@
-import React from "react";
+const Cell = (props) => {
+  const className =
+    (props.value.isRevealed ? "revealed-cell " : "common-cell clickable") +
+    (props.value.isFlagged ? " flagged" : "");
 
-export default class Cell extends React.Component {
-  getValue() {
-    const { value } = this.props;
-
-    if (!value.isRevealed) {
-      return this.props.value.isFlagged ? "🚩" : null;
+  const getValue = () => {
+    if (!props.value.isRevealed) {
+      return props.value.isFlagged ? "🚩" : null;
     }
-    if (value.isMine) {
+    if (props.value.isMine) {
       return "💣";
     }
-    if (value.neighbors === 0) {
+    if (props.value.neighbors === 0) {
       return null;
     }
-    return value.neighbors;
-  }
+    return props.value.neighbors;
+  };
 
-  render() {
-    const className =
-      (this.props.value.isRevealed
-        ? "revealed-cell "
-        : "common-cell clickable") +
-      (this.props.value.isFlagged ? "flagged" : "");
-    return (
-      <div
-        className={className}
-        onClick={this.props.onClick}
-        onContextMenu={this.props.cMenu}
-      >
-        {this.getValue()}
-      </div>
-    );
-  }
-}
+  return (
+    <div
+      className={className}
+      onClick={props.onClick}
+      onContextMenu={props.cMenu}
+    >
+      {getValue()}
+    </div>
+  );
+};
+
+export default Cell;

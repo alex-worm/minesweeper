@@ -1,35 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Board from "./Board";
+import GetNeighbors from "./GetNeighbors";
+import GetRandomInt from "./GetRandomInt";
+import CloseButton from "./CloseButton";
 import Smiley from "./Smiley";
 import Timer from "./Timer";
 import MinesCounter from "./MinesCounter";
-import Board from "./Board";
-import CloseButton from "./CloseButton";
-import GetNeighbors from "./GetNeighbors";
-import GetRandomInt from "./GetRandomInt";
 
-export default class Game extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      length: 8,
-      mines: 10,
-      field: [],
-      time: 0,
-      gameStatus: "😀",
-    };
-    this.state.minesCount = this.state.mines;
-    this.state.field = this.createField(this.state.length, this.state.mines);
-    this.startTimer();
-  }
+const Game = () => {
+  const length = 8;
+  const mines = 20;
 
-  startTimer() {
-    this.timer = setInterval(() => {
-      this.setState({ time: this.state.time + 1 });
-    }, 1000);
-  }
+  const [time, setTime] = useState(0);
+  const [timer, setTimer] = useState(null);
+  const [status, setStatus] = useState("😀");
+  const [minesCount, setMinesCount] = useState(mines);
+  const [field, setField] = useState([]);
 
-  createField(length, minesCount) {
+  const createField = () => {
     let field = [];
+    let minesLeft = mines;
 
     for (let i = 0; i < length; i++) {
       field.push([]);
@@ -45,23 +35,23 @@ export default class Game extends React.Component {
       }
     }
 
-    while (minesCount > 0) {
+    while (minesLeft > 0) {
       let rndX = GetRandomInt(0, length);
       let rndY = GetRandomInt(0, length);
       if (!field[rndX][rndY].isMine) {
         field[rndX][rndY].isMine = true;
-        minesCount--;
+        minesLeft--;
       }
     }
 
-    this.setNeighbors(field);
+    setNeighbors(field);
 
     return field;
-  }
+  };
 
-  setNeighbors(field) {
-    for (let i = 0; i < this.state.length; i++) {
-      for (let j = 0; j < this.state.length; j++) {
+  const setNeighbors = (field) => {
+    for (let i = 0; i < length; i++) {
+      for (let j = 0; j < length; j++) {
         let mine = 0;
         const area = GetNeighbors(field, field[i][j].x, field[i][j].y);
         area.map((cell) => {
@@ -74,29 +64,100 @@ export default class Game extends React.Component {
     }
 
     return field;
-  }
+  };
 
-  discharge() {
-    this.setState({
-      minesCount: this.state.mines,
-      field: this.createField(this.state.length, this.state.mines),
-      time: 0,
-      gameStatus: "😀",
-    });
+  const handleClick = (x, y) => {
+    if (status !== "😀" || field[x][y].isRevealed || field[x][y].isFlagged) {
+      return null;
+    }
 
-    clearInterval(this.timer);
-    this.startTimer();
-  }
-
-  endGame = (isWon) => {
-    clearInterval(this.timer);
-
-    if (isWon) {
-      this.setState({ gameStatus: "😎" });
+    if (field[x][y].isMine) {
+      endGame(false);
       return;
     }
 
-    let blownField = this.state.field;
+    let newField = field;
+
+    if (newField[x][y].neighbors === 0) {
+      newField = revealEmpty(newField, x, y);
+    }
+    newField[x][y].isRevealed = true;
+
+    //setField(newField);
+
+    if (minesCount === 0) {
+      checkForWin();
+    }
+  };
+
+  const handleContextMenu = (e, x, y) => {
+    e.preventDefault();
+
+    if (
+      status !== "😀" ||
+      (minesCount === 0 && !field[x][y].isFlagged) ||
+      field[x][y].isRevealed
+    ) {
+      return null;
+    }
+
+    let newField = field;
+    let minesLeft = minesCount;
+
+    newField[x][y].isFlagged = !newField[x][y].isFlagged;
+    newField[x][y].isFlagged ? minesLeft-- : minesLeft++;
+
+    setMinesCount(minesLeft);
+    setField(newField);
+
+    if (minesLeft === 0) {
+      checkForWin();
+    }
+  };
+
+  const revealEmpty = (field, x, y) => {
+    let area = GetNeighbors(field, x, y);
+
+    area.map((cell) => {
+      if (
+        !cell.isFlagged &&
+        !cell.isRevealed &&
+        (cell.neighbors === 0 || !cell.isMine)
+      ) {
+        field[cell.x][cell.y].isRevealed = true;
+        if (cell.neighbors === 0) {
+          revealEmpty(field, cell.x, cell.y);
+        }
+      }
+    });
+
+    return field;
+  };
+
+  const checkForWin = () => {
+    for (let i = 0; i < length; i++) {
+      for (let j = 0; j < length; j++) {
+        if (
+          (field[i][j].isFlagged && !field[i][j].isMine) ||
+          (!field[i][j].isRevealed && !field[i][j].isFlagged)
+        ) {
+          return null;
+        }
+      }
+    }
+
+    endGame(true);
+  };
+
+  const endGame = (isWon) => {
+    clearInterval(timer);
+
+    if (isWon) {
+      setStatus("😎");
+      return;
+    }
+
+    let blownField = field;
 
     blownField = blownField.map((row) => {
       return row.map((cell) => {
@@ -107,46 +168,51 @@ export default class Game extends React.Component {
       });
     });
 
-    this.setState({ field: blownField, gameStatus: "🤕" });
+    setField(blownField);
+    setStatus("🤕");
   };
 
-  updateField = (value) => {
-    this.setState({ field: value });
-  };
-
-  updateStatus = (value) => {
-    this.setState({ gameStatus: value });
-  };
-
-  updateMines = (value) => {
-    this.setState({ minesCount: value });
-  };
-
-  render() {
-    let info = this.state;
-
-    return (
-      <div className="game">
-        <div className="windowTop">
-          <div>Minesweeper</div>
-          <CloseButton />
-        </div>
-        <div className="gameStatus">
-          <MinesCounter value={info.minesCount} />
-          <Smiley value={info.gameStatus} onClick={() => this.discharge()} />
-          <Timer time={info.time} />
-        </div>
-        <Board
-          updateField={this.updateField}
-          updateStatus={this.updateStatus}
-          updateMines={this.updateMines}
-          endGame={this.endGame}
-          field={info.field}
-          length={info.length}
-          minesCount={info.minesCount}
-          gameStatus={info.gameStatus}
-        />
-      </div>
+  const startTimer = () => {
+    clearInterval(timer);
+    setTimer(
+      setInterval(() => {
+        setTime((time) => time + 1);
+      }, 1000)
     );
-  }
-}
+  };
+
+  useEffect(() => {
+    //startTimer();
+    setField(createField());
+  }, []);
+
+  const discharge = () => {
+    setMinesCount(mines);
+    setField(createField());
+    setTime(0);
+    setStatus("😀");
+
+    startTimer();
+  };
+
+  return (
+    <div className="game">
+      <div className="windowTop">
+        <div>Minesweeper</div>
+        <CloseButton />
+      </div>
+      <div className="gameStatus">
+        <MinesCounter value={minesCount} />
+        <Smiley value={status} onClick={() => discharge()} />
+        <Timer time={time} />
+      </div>
+      <Board
+        field={field}
+        handleClick={handleClick}
+        handleContextMenu={handleContextMenu}
+      />
+    </div>
+  );
+};
+
+export default Game;

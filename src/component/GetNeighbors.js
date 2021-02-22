@@ -2,7 +2,6 @@ import React from "react";
 
 export default function GetNeighbors(field, x, y) {
   const neighbors = [];
-  console.log(field, x, y);
   //up
   if (x > 0) {
     neighbors.push(field[x - 1][y]);

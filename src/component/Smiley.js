@@ -1,11 +1,9 @@
-import React from "react";
+const Smiley = (props) => {
+  return (
+    <div className="smiley clickable" onClick={props.onClick}>
+      {props.value}
+    </div>
+  );
+};
 
-export default class Smiley extends React.Component {
-  render() {
-    return (
-      <div className="smiley clickable" onClick={this.props.onClick}>
-        {this.props.value}
-      </div>
-    );
-  }
-}
+export default Smiley;

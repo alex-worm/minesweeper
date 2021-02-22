@@ -1,3 +1,5 @@
-export default function GetRandomInt(min, max) {
+const GetRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min);
-}
+};
+
+export default GetRandomInt;

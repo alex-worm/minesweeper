@@ -1,7 +1,11 @@
 const Cell = (props) => {
-  const className =
-    (props.value.isRevealed ? "revealed-cell " : "common-cell clickable") +
-    (props.value.isFlagged ? " flagged" : "");
+  let className;
+  if (props.value.isRevealed) {
+    className = "revealed-cell";
+  } else {
+    className =
+      "common-cell " + (props.value.isFlagged ? "flagged" : "clickable");
+  }
 
   const getValue = () => {
     if (!props.value.isRevealed) {

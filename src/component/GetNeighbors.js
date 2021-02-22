@@ -1,6 +1,4 @@
-import React from "react";
-
-export default function GetNeighbors(field, x, y) {
+const GetNeighbors = (field, x, y) => {
   const neighbors = [];
   //up
   if (x > 0) {
@@ -36,4 +34,6 @@ export default function GetNeighbors(field, x, y) {
   }
 
   return neighbors;
-}
+};
+
+export default GetNeighbors;

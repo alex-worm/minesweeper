@@ -9,7 +9,7 @@ import MinesCounter from "./MinesCounter";
 
 const Game = () => {
   const length = 8;
-  const mines = 20;
+  const mines = 10;
 
   const [time, setTime] = useState(0);
   const [timer, setTimer] = useState(null);
@@ -76,14 +76,14 @@ const Game = () => {
       return;
     }
 
-    let newField = field;
+    let newField = field.slice();
 
     if (newField[x][y].neighbors === 0) {
       newField = revealEmpty(newField, x, y);
     }
     newField[x][y].isRevealed = true;
 
-    //setField(newField);
+    setField(newField);
 
     if (minesCount === 0) {
       checkForWin();
@@ -101,7 +101,7 @@ const Game = () => {
       return null;
     }
 
-    let newField = field;
+    let newField = field.slice();
     let minesLeft = minesCount;
 
     newField[x][y].isFlagged = !newField[x][y].isFlagged;
@@ -157,9 +157,7 @@ const Game = () => {
       return;
     }
 
-    let blownField = field;
-
-    blownField = blownField.map((row) => {
+    let blownField = field.map((row) => {
       return row.map((cell) => {
         if (cell.isMine) {
           cell.isRevealed = true;
@@ -182,7 +180,7 @@ const Game = () => {
   };
 
   useEffect(() => {
-    //startTimer();
+    startTimer();
     setField(createField());
   }, []);
 

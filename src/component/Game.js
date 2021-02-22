@@ -12,7 +12,7 @@ export default class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      length: 10,
+      length: 8,
       mines: 10,
       field: [],
       time: 0,

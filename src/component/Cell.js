@@ -18,7 +18,9 @@ export default class Cell extends React.Component {
 
   render() {
     const className =
-      (this.props.value.isRevealed ? "revealed-cell " : "common-cell ") +
+      (this.props.value.isRevealed
+        ? "revealed-cell "
+        : "common-cell clickable") +
       (this.props.value.isFlagged ? "flagged" : "");
     return (
       <div
